@@ -16,7 +16,7 @@ GIT
 PATH
   remote: .
   specs:
-    celluloid-pool (0.5.0)
+    celluloid-pool (0.8.5.pre1)
       celluloid (~> 0.17.0)
 
 GEM

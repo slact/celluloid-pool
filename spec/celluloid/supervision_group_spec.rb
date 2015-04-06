@@ -20,6 +20,7 @@ RSpec.describe Celluloid::SupervisionGroup, actor_system: :global do
       MyPoolGroup.run!
       sleep 0.001 # startup time hax
 
+      warn "args: #{Celluloid::Actor[:example_pool].args}"
       expect(Celluloid::Actor[:example_pool]).to be_running
       expect(Celluloid::Actor[:example_pool].args).to eq ['foo']
       expect(Celluloid::Actor[:example_pool].size).to be 3
