@@ -1,2 +1,4 @@
-# celluloid-pool
-Actor pools for Celluloid.
+## Actor pools for Celluloid.
+### `celluloid-pool`
+
+Documentation coming.
