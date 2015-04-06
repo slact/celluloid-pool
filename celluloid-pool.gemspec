@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.name          = "celluloid-pool"
   spec.version       = "0.8.5.pre1"
   spec.authors       = ["Tony Arcieri", "Tim Carey-Smith", "digitalextremist //"]
-  spec.email         = ['tony.arcieri@gmail.com', 'de@freed.network']
+  spec.email         = ['tony.arcieri@gmail.com', 'code@extremist.digital']
 
   spec.summary       = %q{An implementation of an actor pool, based on the Celluloid concurrent object framework.}
   spec.description   = %q{An implementation of an actor pool, based on the Celluloid concurrent object framework.}
