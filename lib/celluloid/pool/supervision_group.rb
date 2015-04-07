@@ -1,6 +1,5 @@
 module Celluloid
   class SupervisionGroup
-
     class << self
 
       # Register a pool of actors to be launched on group startup

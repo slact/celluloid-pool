@@ -84,10 +84,10 @@ RSpec.describe "Celluloid.pool", actor_system: :global do
   end
 
   context "#size=" do
-    subject { MyWorker.pool size: 4 }
+    subject { MyWorker.pool size: ::POOL_SIZE }
 
     it "should adjust the pool size up", flaky: true do
-      expect(test_concurrency_of(subject)).to eq(4)
+      expect(test_concurrency_of(subject)).to eq(::POOL_SIZE)
 
       subject.size = 6
       expect(subject.size).to eq(6)
@@ -96,11 +96,11 @@ RSpec.describe "Celluloid.pool", actor_system: :global do
     end
 
     it "should adjust the pool size down", flaky: true do
-      expect(test_concurrency_of(subject)).to eq(4)
+      expect(test_concurrency_of(subject)).to eq(::POOL_SIZE)
 
-      subject.size = 2
-      expect(subject.size).to eq(2)
-      expect(test_concurrency_of(subject)).to eq(2)
+      subject.size = (::POOL_SIZE/2).to_i
+      expect(subject.size).to eq((::POOL_SIZE/2).to_i)
+      expect(test_concurrency_of(subject)).to eq((::POOL_SIZE/2).to_i)
     end
   end
 

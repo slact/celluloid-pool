@@ -1,6 +1,8 @@
 require 'coveralls'
 Coveralls.wear!
 
+POOL_SIZE = 4
+
 require 'rubygems'
 require 'bundler/setup'
 

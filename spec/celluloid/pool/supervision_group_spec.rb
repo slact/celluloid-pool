@@ -12,7 +12,7 @@ RSpec.describe Celluloid::SupervisionGroup, actor_system: :global do
         def running?; :yep; end
       end
       class MyPoolGroup < Celluloid::SupervisionGroup
-        pool MyPoolActor, :as => :example_pool, :args => 'foo', :size => 3
+        pool MyPoolActor, :as => :example_pool, :args => 'foo', :size => ::POOL_SIZE
       end
     end
 
@@ -20,10 +20,9 @@ RSpec.describe Celluloid::SupervisionGroup, actor_system: :global do
       MyPoolGroup.run!
       sleep 0.001 # startup time hax
 
-      warn "args: #{Celluloid::Actor[:example_pool].args}"
       expect(Celluloid::Actor[:example_pool]).to be_running
       expect(Celluloid::Actor[:example_pool].args).to eq ['foo']
-      expect(Celluloid::Actor[:example_pool].size).to be 3
+      expect(Celluloid::Actor[:example_pool].size).to eq ::POOL_SIZE
     end
   end
 end

@@ -7,7 +7,7 @@ GIT
 
 GIT
   remote: git://github.com/celluloid/celluloid.git
-  revision: 333ab45e99b7e35dca93cc28b0c3f7279ef7781c
+  revision: d8353b999188f925dcc81016dd44d76bcca0ebe4
   branch: 0.17.0-prerelease
   specs:
     celluloid (0.17.0)

@@ -9,7 +9,8 @@ module Celluloid
     trap_exit :__crash_handler__
     finalizer :__shutdown__
 
-    def initialize(worker_class, options = {})
+    def initialize(worker_class, options={})
+      options = SupervisionGroup.prepare_options(options)
       @size = options[:size] || [Celluloid.cores || 2, 2].max
       raise ArgumentError, "minimum pool size is 2" if @size < 2
 
