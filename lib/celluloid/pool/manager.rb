@@ -25,6 +25,7 @@ module Celluloid
     end
 
     def __shutdown__
+      # TODO: these can be nil if initializer crashes
       terminators = (@idle + @busy).map do |actor|
         begin
           actor.future(:terminate)
