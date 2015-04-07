@@ -125,15 +125,25 @@ RSpec.describe "Celluloid.pool", actor_system: :global do
     subject { MyWorker.pool.async }
 
     context "with incorrect invocation" do
-      before { allow(Celluloid::Logger).to receive(:crash) }
+      let(:logger) { double(:logger) }
+
+      before do
+        stub_const('Celluloid::Logger', logger)
+        allow(logger).to receive(:crash)
+        allow(logger).to receive(:warn)
+        allow(logger).to receive(:with_backtrace) do |*args, &block|
+          block.call logger
+        end
+      end
 
       it "logs ArgumentError exception", flaky: true do
-        expect(Celluloid::Logger).to receive(:crash).with(
+        expect(logger).to receive(:crash).with(
           anything(),
           instance_of(ArgumentError))
 
         subject.process(:something, :one_argument_too_many)
         sleep 0.001 # Let Celluloid do it's async magic
+        sleep 0.1 if defined? JRUBY_VERSION
       end
     end
 
