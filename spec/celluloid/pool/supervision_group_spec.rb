@@ -40,7 +40,7 @@ RSpec.describe Celluloid::SupervisionGroup, actor_system: :global do
     it "runs applications and passes pool options and actor args" do
       expect(Celluloid::Actor[:example_pool]).to be_running
       expect(Celluloid::Actor[:example_pool].args).to eq ['foo']
-      expect(Celluloid::Actor[:example_pool].size).to be size
+      expect(Celluloid::Actor[:example_pool].size).to be 4 # ::POOL
     end
   end
 end
