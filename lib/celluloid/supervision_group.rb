@@ -1,5 +1,6 @@
 module Celluloid
   class SupervisionGroup
+
     class << self
 
       # Register a pool of actors to be launched on group startup
@@ -12,7 +13,6 @@ module Celluloid
     end
 
     def pool(klass, options = {})
-      puts "#{[ klass, options ]}"
       options[:method] = 'pool_link'
       options[:injections] = {
         # when it is a pool, then we don't splat the args
