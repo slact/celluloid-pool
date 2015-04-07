@@ -9,6 +9,8 @@ rvm:
   - rbx-2
 
 env:
+  - global
+    - NUMBER_OF_PROCESSORS=2
   - CLLLD_BYPASS_FLAKY=true
   - CLLLD_BYPASS_FLAKY=false
 
