@@ -1,3 +1,4 @@
 log/*
 coverage/*
 Gemfile.lock
+pkg/*
