@@ -16,14 +16,14 @@ module Celluloid
       options[:injections] = {
         # when it is a pool, then we don't splat the args
         # and we need to extract the pool size if set
-        :start => Proc.new {
+        :before_start => Proc.new {
           if @pool
             options = {:args => @args}
             options[:size] = @pool_size if @pool_size
             @args = [options]
           end
         },
-        :initialize => Proc.new {
+        :after_initialize => Proc.new {
           @pool = @method == 'pool_link'
           @pool_size = @options['size'] if @pool
         }
