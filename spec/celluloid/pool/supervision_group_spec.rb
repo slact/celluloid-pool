@@ -30,7 +30,18 @@ RSpec.describe Celluloid::SupervisionGroup, actor_system: :global do
 
     before do
       subject
-      size.times { SupervisionGroupHelper::QUEUE.pop }
+
+      initialized = 0
+      begin
+        Timeout.timeout(2) do
+          size.times do
+            SupervisionGroupHelper::QUEUE.pop
+            initialized += 1
+          end
+        end
+      rescue Timeout::Error
+        fail "Timeout waiting for all #{size} workers to initialize (got only #{initialized} ready). Arguments handled incorrectly?"
+      end
     end
 
     subject do
