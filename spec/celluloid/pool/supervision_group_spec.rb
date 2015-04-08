@@ -2,7 +2,9 @@ RSpec.describe Celluloid::SupervisionGroup, actor_system: :global do
 
   class SupervisionGroupHelper
     QUEUE = Queue.new
-    SIZE = ::POOL_SIZE
+
+    # Keep it at 3 to better detect argument-passing issues
+    SIZE = 3
   end
 
   class MyPoolActor
@@ -23,7 +25,7 @@ RSpec.describe Celluloid::SupervisionGroup, actor_system: :global do
     end
   end
 
-  context "when supervising a pool" do
+  context "when supervising a 3-item pool pool" do
     let(:size) { SupervisionGroupHelper::SIZE }
 
     before do
@@ -40,7 +42,7 @@ RSpec.describe Celluloid::SupervisionGroup, actor_system: :global do
     it "runs applications and passes pool options and actor args" do
       expect(Celluloid::Actor[:example_pool]).to be_running
       expect(Celluloid::Actor[:example_pool].args).to eq ['foo']
-      expect(Celluloid::Actor[:example_pool].size).to be 4 # ::POOL
+      expect(Celluloid::Actor[:example_pool].size).to be size
     end
   end
 end
