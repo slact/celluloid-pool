@@ -1,8 +1,6 @@
 require 'coveralls'
 Coveralls.wear!
 
-POOL_SIZE = 4
-
 require 'rubygems'
 require 'bundler/setup'
 
@@ -65,7 +63,7 @@ RSpec.configure do |config|
     end
   end
 
-  config.filter_gems_from_backtrace(*%w(rspec-expectations rspec-core rspec-mocks))
+  config.filter_gems_from_backtrace(*%w(rspec-expectations rspec-core rspec-mocks rspec-retry))
 
   config.mock_with :rspec do |mocks|
     mocks.verify_doubled_constant_names = true

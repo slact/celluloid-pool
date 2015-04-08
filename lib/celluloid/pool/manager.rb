@@ -10,21 +10,24 @@ module Celluloid
     finalizer :__shutdown__
 
     def initialize(worker_class, options={})
+      @idle = []
+      @busy = []
+      @worker_class = worker_class
+      @args = {}
+      @size = 0
+
       options = SupervisionGroup.prepare_options(options)
       @size = options[:size] || [Celluloid.cores || 2, 2].max
-      raise ArgumentError, "minimum pool size is 2" if @size < 2
-
-      @worker_class = worker_class
       @args = options[:args] ? Array(options[:args]) : []
 
-      @idle = @size.times.map { worker_class.new_link(*@args) }
+      raise ArgumentError, "minimum pool size is 2" if @size < 2
 
-      # FIXME: Another data structure (e.g. Set) would be more appropriate
-      # here except it causes MRI to crash :o
-      @busy = []
+      # Do this last since it can suspend and/or crash
+      @idle = @size.times.map { worker_class.new_link(*@args) }
     end
 
     def __shutdown__
+      # TODO: these can be nil if initializer crashes
       terminators = (@idle + @busy).map do |actor|
         begin
           actor.future(:terminate)
