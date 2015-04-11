@@ -1,4 +1,4 @@
-require 'celluloid'
+require 'celluloid' unless defined? Celluloid
 require 'celluloid/pool/manager'
 require 'celluloid/pool/supervision_group'
 
