@@ -119,7 +119,7 @@ module Celluloid
       Task.current.guard_warnings = true
       while @idle.empty?
         # Wait for responses from one of the busy workers
-        response = exclusive { receive { |msg| msg.is_a?(Response) } }
+        response = exclusive { receive { |msg| msg.is_a?(Internals::Response) } }
         Thread.current[:celluloid_actor].handle_message(response)
       end
 

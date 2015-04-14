@@ -43,7 +43,7 @@ RSpec.describe "Celluloid.pool", actor_system: :global do
 
   let(:crashes) { [] }
 
-  before { allow(Celluloid::Logger).to receive(:crash) { |*args| crashes << args } }
+  before { allow(Celluloid::Internals::Logger).to receive(:crash) { |*args| crashes << args } }
   after { fail "Unexpected crashes: #{crashes.inspect}" unless crashes.empty? }
 
   it "processes work units synchronously" do
@@ -57,7 +57,7 @@ RSpec.describe "Celluloid.pool", actor_system: :global do
   end
 
   it "handles crashes" do
-    allow(Celluloid::Logger).to receive(:crash)
+    allow(Celluloid::Internals::Logger).to receive(:crash)
     expect { subject.crash }.to raise_error(ExampleError)
     expect(subject.process).to be :done
   end
@@ -130,7 +130,7 @@ RSpec.describe "Celluloid.pool", actor_system: :global do
       let(:logger) { double(:logger) }
 
       before do
-        stub_const('Celluloid::Logger', logger)
+        stub_const('Celluloid::Internals::Logger', logger)
         allow(logger).to receive(:crash)
         allow(logger).to receive(:warn)
         allow(logger).to receive(:with_backtrace) do |*args, &block|

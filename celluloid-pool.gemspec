@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "celluloid-pool"
-  spec.version       = "0.8.5.pre1"
+  spec.version       = "0.8.6"
   spec.authors       = ["Tony Arcieri", "Tim Carey-Smith", "digitalextremist //"]
   spec.email         = ['tony.arcieri@gmail.com', 'code@extremist.digital']
 
