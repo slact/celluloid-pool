@@ -15,6 +15,4 @@ Gem::Specification.new do |spec|
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|examples|spec|features)/}) }
   spec.require_paths = ["lib"]
-
-  spec.add_dependency "celluloid", "~> 0.17.0"
 end
