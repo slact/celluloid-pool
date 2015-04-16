@@ -1,8 +1,9 @@
-require "bundler/gem_tasks"
-require 'rspec/core/rake_task'
+require 'bundler/gem_tasks'
 
-RSpec::Core::RakeTask.new(:spec) do |spec|
-  spec.pattern = 'spec/**/*_spec.rb'
-  spec.rspec_opts = ['--color --format documentation']
-end
-task :default => :spec
+Dir['tasks/**/*.rake'].each { |task| load task }
+
+default_tasks = ['spec']
+default_tasks << 'rubocop' unless ENV['CI']
+task default: default_tasks
+
+task ci: %w(spec benchmark)
