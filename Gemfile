@@ -4,6 +4,7 @@ gem 'bundler'
 gem 'coveralls'
 
 gem 'celluloid', github: 'celluloid/celluloid', branch: '0.17.0-prerelease'
+gem 'celluloid-supervision', github: 'celluloid/celluloid-supervision', branch: 'master'
 
 gemspec
 
