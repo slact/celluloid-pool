@@ -145,7 +145,7 @@ RSpec.describe "Celluloid.pool", actor_system: :global do
 
         subject.process(:something, :one_argument_too_many)
         sleep 0.001 # Let Celluloid do it's async magic
-        sleep 0.1 if defined? JRUBY_VERSION
+        sleep 0.1 if RUBY_PLATFORM == 'java'
       end
     end
 
