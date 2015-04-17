@@ -1,6 +1,4 @@
 # coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "celluloid-pool"
@@ -16,5 +14,5 @@ Gem::Specification.new do |spec|
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|examples|spec|features)/}) }
   spec.require_paths = ["lib"]
 
-  gem.add_runtime_dependency 'celluloid-supervision'
+  spec.add_runtime_dependency 'celluloid-supervision'
 end
