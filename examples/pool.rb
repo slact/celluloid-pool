@@ -12,21 +12,12 @@ PARALLEL_RUBIES = %w(jruby rbx)
 $:.push File.expand_path('../../lib', __FILE__)
 
 require 'celluloid/pool'
+require 'celluloid/extras/rehasher'
 require 'celluloid/autostart'
 require 'digest/sha2'
 
-class Rehasher
-  include Celluloid
-
-  def rehash(string, rounds)
-    raise ArgumentError, "hurr" unless rounds > 1
-    penultimate = (rounds - 1).times.inject(string) { |s| Digest::SHA512.digest(s) }
-    Digest::SHA512.hexdigest(penultimate)
-  end
-end
-
 if $0 == __FILE__
-  pool = Rehasher.pool
+  pool = Celluloid::Extras::Rehasher.pool
   puts "Megahashing!"
   if PARALLEL_RUBIES.include?(RUBY_ENGINE)
     puts "Since you're using a Ruby with parallel thread execution, this should light up all your cores"
