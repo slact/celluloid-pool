@@ -3,6 +3,8 @@ source 'https://rubygems.org'
 gem 'bundler'
 gem 'coveralls'
 
+gemspec development_group: :gem_build_tools
+
 group :development do
   gem 'pry'
   #de gem 'guard'
