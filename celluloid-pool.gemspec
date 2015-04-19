@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |gem|
   gem.name          = "celluloid-pool"
-  gem.version       = "0.9.0.pre0"
+  gem.version       = "0.10.0.pre0"
   gem.authors       = ["Tony Arcieri", "Tim Carey-Smith", "digitalextremist //"]
   gem.email         = ['tony.arcieri@gmail.com', 'code@extremist.digital']
 
