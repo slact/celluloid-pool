@@ -16,5 +16,5 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency 'bundler'
   gem.add_runtime_dependency 'celluloid', '0.17.0.pre0'
-  gem.add_runtime_dependency 'celluloid-essentials', '0.20.0.pre1'
+  gem.add_runtime_dependency 'celluloid-essentials', '0.20.0.pre0'
 end
