@@ -27,3 +27,8 @@ group :gem_build_tools do
 end
 
 gem 'celluloid', github: 'celluloid/celluloid', branch: '0.17.0-prerelease'
+gem "celluloid-essentials", github: "celluloid/celluloid-essentials", branch: "master"
+gem "celluloid-supervision", github: "celluloid/celluloid-supervision", branch: "master"
+gem "celluloid-fsm", github: "celluloid/celluloid-fsm", branch: "master"
+gem "celluloid-extras", github: "celluloid/celluloid-extras", branch: "master"
+gem "timers", github: "celluloid/timers"

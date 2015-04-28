@@ -16,6 +16,11 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency 'bundler'
   
-  gem.add_dependency "celluloid"
+  gem.add_development_dependency "celluloid"
+  gem.add_development_dependency "celluloid-fsm"
+  gem.add_development_dependency "celluloid-supervision"
+  gem.add_development_dependency "celluloid-essentials"
+  gem.add_development_dependency "timers", "~> 4.0.0"
+  gem.add_development_dependency "celluloid-extras"
 
 end
