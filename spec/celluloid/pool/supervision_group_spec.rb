@@ -1,6 +1,6 @@
-RSpec.describe Celluloid::SupervisionGroup, actor_system: :global do
+RSpec.describe Celluloid::Supervision::Container, actor_system: :global do
 
-  class SupervisionGroupHelper
+  class SupervisionContainerHelper
     QUEUE = Queue.new
 
     # Keep it at 3 to better detect argument-passing issues
@@ -21,12 +21,12 @@ RSpec.describe Celluloid::SupervisionGroup, actor_system: :global do
     end
 
     def ready
-      SupervisionGroupHelper::QUEUE << :done
+      SupervisionContainerHelper::QUEUE << :done
     end
   end
 
   context "when supervising a 3-item pool pool" do
-    let(:size) { SupervisionGroupHelper::SIZE }
+    let(:size) { SupervisionContainerHelper::SIZE }
 
     before do
       subject
@@ -35,7 +35,7 @@ RSpec.describe Celluloid::SupervisionGroup, actor_system: :global do
       begin
         Timeout.timeout(2) do
           size.times do
-            SupervisionGroupHelper::QUEUE.pop
+            SupervisionContainerHelper::QUEUE.pop
             initialized += 1
           end
         end
@@ -45,8 +45,8 @@ RSpec.describe Celluloid::SupervisionGroup, actor_system: :global do
     end
 
     subject do
-      Class.new(Celluloid::SupervisionGroup) do
-        pool MyPoolActor, :as => :example_pool, :args => 'foo', :size => SupervisionGroupHelper::SIZE
+      Class.new(Celluloid::Supervision::Container) do
+        pool MyPoolActor, :as => :example_pool, :args => 'foo', :size => SupervisionContainerHelper::SIZE
       end.run!
     end
 
