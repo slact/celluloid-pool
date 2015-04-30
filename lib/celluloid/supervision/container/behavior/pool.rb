@@ -1,41 +1,34 @@
-require 'set'
+require "set"
 
 module Celluloid
-
   module ClassMethods
-
     # Create a new pool of workers. Accepts the following options:
     #
     # * size: how many workers to create. Default is worker per CPU core
     # * args: array of arguments to pass when creating a worker
     #
     def pool(config={})
-      Celluloid.services.supervise(config.merge({
-            :type => Supervision::Container::Behavior::Pool,
-            :workers => self
-          }
-        )
-      )
+      Celluloid.services.supervise(config.merge(type: Supervision::Container::Behavior::Pool,
+                                                workers: self,
+                                               ),
+                                  )
     end
 
     # Same as pool, but links to the pool manager
-    def pool_link(klass,config={})
+    def pool_link(klass, config={})
       Supervision::Container::Behavior::Pool.new_link(
-        config.merge(:workers => klass)
+        config.merge(workers: klass),
       )
     end
   end
 
   module Supervision
     class Container
-
       def pool(klass, config={})
-        Celluloid.services.supervise(config.merge({
-              :type => Supervision::Container::Behavior::Pool,
-              :workers => klass
-            }
-          )
-        )
+        Celluloid.services.supervise(config.merge(type: Supervision::Container::Behavior::Pool,
+                                                  workers: klass,
+                                                 ),
+                                    )
       end
 
       class Instance
@@ -44,27 +37,25 @@ module Celluloid
 
       class << self
         # Register a pool of actors to be launched on group startup
-        def pool(klass, *args, &block)
+        def pool(klass, *args, &_block)
           blocks << lambda do |container|
-            container.pool(Configuration.options(args, :type => klass))
+            container.pool(Configuration.options(args, type: klass))
           end
         end
       end
 
       class Pool
-
         include Behavior
 
         identifier! :size, :pool
 
-        configuration {
+        configuration do
           @supervisor = Behavior::Pool
           @method = "pool_link"
           @pool = true
           @pool_size = @cofiguration[:size]
           @configuration
-        }
-
+        end
       end
 
       module Behavior
@@ -87,7 +78,7 @@ module Celluloid
             @size = options[:size] || [Celluloid.cores || 2, 2].max
             @args = options[:args] ? Array(options[:args]) : []
 
-            raise ArgumentError, "minimum pool size is 2" if @size < 2
+            fail ArgumentError, "minimum pool size is 2" if @size < 2
 
             # Do this last since it can suspend and/or crash
             @idle = @size.times.map { workers.new_link(*@args) }
@@ -152,9 +143,7 @@ module Celluloid
             _send_ :inspect
           end
 
-          def size
-            @size
-          end
+          attr_reader :size
 
           def size=(new_size)
             new_size = [0, new_size].max

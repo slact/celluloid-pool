@@ -20,7 +20,7 @@ unless $CELLULOID_BACKPORTED == false
       end
 
       def crash
-        raise ExampleError, "zomgcrash"
+        fail ExampleError, "zomgcrash"
       end
 
       protected
@@ -37,15 +37,14 @@ unless $CELLULOID_BACKPORTED == false
     def test_concurrency_of(pool)
       baseline = Time.now.to_f
       values = 10.times.map { pool.future.sleepy_work }.map(&:value)
-      values.select {|t| t - baseline < 0.1 }.length
+      values.select { |t| t - baseline < 0.1 }.length
     end
 
     subject { MyWorker.pool }
 
     let(:crashes) { [] }
 
-    context("BACKPORTED") {
-
+    context("BACKPORTED") do
       before { allow(Celluloid::Internals::Logger).to receive(:crash) { |*args| crashes << args } }
 
       after { fail "Unexpected crashes: #{crashes.inspect}" unless crashes.empty? }
@@ -134,7 +133,7 @@ unless $CELLULOID_BACKPORTED == false
           let(:logger) { double(:logger) }
 
           before do
-            stub_const('Celluloid::Internals::Logger', logger)
+            stub_const("Celluloid::Internals::Logger", logger)
             allow(logger).to receive(:crash)
             allow(logger).to receive(:warn)
             allow(logger).to receive(:with_backtrace) do |*args, &block|
@@ -144,21 +143,21 @@ unless $CELLULOID_BACKPORTED == false
 
           it "logs ArgumentError exception", flaky: true do
             expect(logger).to receive(:crash).with(
-              anything(),
+              anything,
               instance_of(ArgumentError))
 
             subject.process(:something, :one_argument_too_many)
             sleep 0.001 # Let Celluloid do it's async magic
-            sleep 0.1 if RUBY_PLATFORM == 'java'
+            sleep 0.1 if RUBY_PLATFORM == "java"
           end
         end
 
         context "when unintialized" do
           it "should provide reasonable dump" do
-            expect(subject.inspect).to eq('#<Celluloid::Proxy::Async(Celluloid::PoolManager)>')
+            expect(subject.inspect).to eq("#<Celluloid::Proxy::Async(Celluloid::PoolManager)>")
           end
         end
       end
-    }
+    end
   end
 end

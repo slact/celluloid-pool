@@ -1,6 +1,5 @@
 unless $CELLULOID_BACKPORTED == false
   RSpec.describe Celluloid::SupervisionGroup, actor_system: :global do
-
     class SupervisionContainerHelper
       QUEUE = Queue.new
 
@@ -12,7 +11,7 @@ unless $CELLULOID_BACKPORTED == false
       include Celluloid
 
       attr_reader :args
-      def initialize *args
+      def initialize(*args)
         @args = *args
         ready
       end
@@ -41,19 +40,19 @@ unless $CELLULOID_BACKPORTED == false
             end
           end
         rescue Timeout::Error
-          fail "Timeout waiting for all #{size} workers to initialize (got only #{initialized} ready). Arguments handled incorrectly?"
+          raise "Timeout waiting for all #{size} workers to initialize (got only #{initialized} ready). Arguments handled incorrectly?"
         end
       end
 
       subject do
         Class.new(Celluloid::Supervision::Container) do
-          pool MyPoolActor, :as => :example_pool, :args => 'foo', :size => SupervisionContainerHelper::SIZE
+          pool MyPoolActor, as: :example_pool, args: "foo", size: SupervisionContainerHelper::SIZE
         end.run!
       end
 
       it "runs applications and passes pool options and actor args" do
         expect(Celluloid::Actor[:example_pool]).to be_running
-        expect(Celluloid::Actor[:example_pool].args).to eq ['foo']
+        expect(Celluloid::Actor[:example_pool].args).to eq ["foo"]
         expect(Celluloid::Actor[:example_pool].size).to be size
       end
     end

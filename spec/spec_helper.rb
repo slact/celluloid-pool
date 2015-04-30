@@ -1,12 +1,12 @@
-require 'coveralls'
+require "coveralls"
 Coveralls.wear!
 
-require 'rubygems'
-require 'bundler/setup'
+require "rubygems"
+require "bundler/setup"
 
 # Require in order, so both CELLULOID_TEST and CELLULOID_DEBUG are true
-require 'celluloid/test'
-require 'celluloid/pool'
+require "celluloid/test"
+require "celluloid/pool"
 
 module CelluloidSpecs
   def self.included_module
@@ -20,15 +20,15 @@ end
 
 $CELLULOID_DEBUG = true
 
-require 'celluloid/probe'
-require 'rspec/log_split'
+require "celluloid/probe"
+require "rspec/log_split"
 
 Celluloid.shutdown_timeout = 1
 
-Dir['./spec/support/*.rb'].map {|f| require f }
+Dir["./spec/support/*.rb"].map { |f| require f }
 
 RSpec.configure do |config|
-  config.filter_run :focus => true
+  config.filter_run focus: true
   config.run_all_when_everything_filtered = true
   config.disable_monkey_patching!
 
@@ -40,7 +40,7 @@ RSpec.configure do |config|
 
     Thread.list.each do |thread|
       next if thread == Thread.current
-      if RUBY_PLATFORM == 'java'
+      if RUBY_PLATFORM == "java"
         # Avoid disrupting jRuby's "fiber" threads.
         next if /Fiber/ =~ thread.to_java.getNativeThread.get_name
       end
@@ -73,10 +73,8 @@ RSpec.configure do |config|
     example.run
   end
 
-=begin
-  # Must be *after* the around hook above
-  require 'rspec/retry'
-  config.verbose_retry = true
-  config.default_sleep_interval = 3
-=end
+  #   # Must be *after* the around hook above
+  #   require 'rspec/retry'
+  #   config.verbose_retry = true
+  #   config.default_sleep_interval = 3
 end

@@ -5,18 +5,18 @@
 # Looking for a way to light up all your cores? This is it! Celluloid::Worker
 # lets you create fixed-sized thread pools for executing expensive background
 # processing tasks.
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path("../lib", __FILE__)
 
 PARALLEL_RUBIES = %w(jruby rbx)
 
-$:.push File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.push File.expand_path("../../lib", __FILE__)
 
-require 'celluloid/pool'
-require 'celluloid/extras/rehasher'
-require 'celluloid/autostart'
-require 'digest/sha2'
+require "celluloid/pool"
+require "celluloid/extras/rehasher"
+require "celluloid/autostart"
+require "digest/sha2"
 
-if $0 == __FILE__
+if $PROGRAM_NAME == __FILE__
   pool = Celluloid::Extras::Rehasher.pool
   puts "Megahashing!"
   if PARALLEL_RUBIES.include?(RUBY_ENGINE)
