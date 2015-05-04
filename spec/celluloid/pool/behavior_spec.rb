@@ -45,7 +45,7 @@ RSpec.describe Celluloid::Supervision::Container, actor_system: :global do
 
     subject do
       Class.new(Celluloid::Supervision::Container) do
-        pool MyPoolActor, as: :example_pool, args: "foo", size: SupervisionContainerHelper::SIZE
+        pool MyPoolActor, as: :example_pool, args: ["foo"], size: SupervisionContainerHelper::SIZE
       end.run!
     end
 

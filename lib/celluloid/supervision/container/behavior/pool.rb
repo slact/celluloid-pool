@@ -35,7 +35,7 @@ module Celluloid
         # Register a pool of actors to be launched on group startup
         def pool(klass, *args, &_block)
           blocks << lambda do |container|
-            container.pool(Configuration.options(args, type: klass))
+            container.pool(klass, Configuration.options(args))
           end
         end
       end
