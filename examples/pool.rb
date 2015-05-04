@@ -11,9 +11,9 @@ PARALLEL_RUBIES = %w(jruby rbx)
 
 $LOAD_PATH.push File.expand_path("../../lib", __FILE__)
 
-require "celluloid/pool"
+require "celluloid/current"
 require "celluloid/extras/rehasher"
-require "celluloid/autostart"
+require "celluloid/pool"
 require "digest/sha2"
 
 if $PROGRAM_NAME == __FILE__
