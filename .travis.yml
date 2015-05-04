@@ -13,9 +13,14 @@ matrix:
     - rvm: rbx-2
     - rvm: ruby-head
     - rvm: jruby-head
+    - env: CELLULOID_BACKPORTED=true
 
 env:
-  - NUMBER_OF_PROCESSORS=2
+  matrix:
+    - CELLULOID_BACKPORTED=true
+    - CELLULOID_BACKPORTED=false
+  global:
+    - NUMBER_OF_PROCESSORS=2
 
 notifications:
   irc: "irc.freenode.org#celluloid"
@@ -24,4 +29,4 @@ before_install:
   - if [ "$TRAVIS_RUBY_VERSION" == "rbx-2" ] ; then export BUNDLE_JOBS=1 ; else export BUNDLE_JOBS=4; fi
 
 sudo: false
-install: bundle install --retry=3 --without=development
+install: bundle install --without=development
