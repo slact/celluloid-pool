@@ -15,10 +15,7 @@ module Celluloid
           @idle = []
           @busy = []
           @workers = options[:workers]
-          @args = {}
-          @size = 0
 
-          #de options = Supervision::Configuration.options(options)
           @size = options[:size] || [Celluloid.cores || 2, 2].max
           @args = options[:args] ? Array(options[:args]) : []
 
@@ -91,7 +88,7 @@ module Celluloid
 
         def size=(new_size)
           new_size = [0, new_size].max
-
+          puts "new size: #{new_size}, old size: #{size}"
           if new_size > size
             delta = new_size - size
             delta.times { @idle << @workers.new_link(*@args) }

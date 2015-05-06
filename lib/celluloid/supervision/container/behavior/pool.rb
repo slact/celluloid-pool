@@ -2,28 +2,30 @@ require "set"
 
 module Celluloid
   module ClassMethods
+    extend Forwardable
+    def_delegators :"Celluloid::Supervision::Container::Pool", :pooling_options
     # Create a new pool of workers. Accepts the following options:
     #
     # * size: how many workers to create. Default is worker per CPU core
     # * args: array of arguments to pass when creating a worker
     #
     def pool(config={})
-      Celluloid.services.supervise(config.merge(type: Supervision::Container::Pool, args: [{workers: self}]))
+      Celluloid.services.supervise(pooling_options(config, workers: self))
       Celluloid.services.actors.last
     end
 
     # Same as pool, but links to the pool manager
     def pool_link(klass, config={})
-      Supervision::Container::Pool.new_link(
-        config.merge(args: [{workers: klass}]),
-      )
+      Supervision::Container::Pool.new_link(pooling_options(config, workers: klass))
     end
   end
 
   module Supervision
     class Container
+      extend Forwardable
+      def_delegators :"Celluloid::Supervision::Container::Pool", :pooling_options
       def pool(klass, config={})
-        Celluloid.services.supervise(config.merge(type: Container::Pool, args: [{workers: klass}]))
+        Celluloid.services.supervise(pooling_options(config, workers: klass))
         Celluloid.services.actors.last
       end
 
@@ -42,6 +44,14 @@ module Celluloid
 
       class Pool
         include Behavior
+
+        class << self
+          def pooling_options(config={},mixins={})
+            combined = { :type => Celluloid::Supervision::Container::Pool }.merge(config).merge(mixins)
+            combined[:args] = [combined.select { |k,v| [:workers, :size, :args].include?(k) }]
+            combined
+          end
+        end
 
         identifier! :size, :pool
 
