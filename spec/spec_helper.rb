@@ -27,8 +27,7 @@ Celluloid.shutdown_timeout = 1
 
 logfile = File.open(File.expand_path("../../log/test.log", __FILE__), 'a')
 logfile.sync = true
-
-logger = Celluloid.logger = Logger.new(logfile)
+Celluloid.logger = Logger.new(logfile)
 
 Dir["./spec/support/*.rb"].map { |f| require f }
 
