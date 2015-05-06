@@ -3,7 +3,7 @@ require File.expand_path("../culture/sync", __FILE__)
 
 Gem::Specification.new do |gem|
   gem.name          = "celluloid-pool"
-  gem.version       = "0.10.0.pre4"
+  gem.version       = "0.10.0.rc1"
   gem.authors       = ["Tony Arcieri", "Tim Carey-Smith", "digitalextremist //"]
   gem.email         = ["tony.arcieri@gmail.com", "code@extremist.digital"]
 
