@@ -21,13 +21,15 @@ end
 $CELLULOID_DEBUG = true
 
 require "celluloid/probe"
-#de require "rspec/log_split"
+require "rspec/log_split"
 
 Celluloid.shutdown_timeout = 1
 
+=begin
 logfile = File.open(File.expand_path("../../log/test.log", __FILE__), 'a')
 logfile.sync = true
 Celluloid.logger = Logger.new(logfile)
+=end
 
 Dir["./spec/support/*.rb"].map { |f| require f }
 
@@ -36,8 +38,8 @@ RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
   config.disable_monkey_patching!
 
-  #de config.log_split_dir = File.expand_path("../../log/#{Time.now.iso8601}", __FILE__)
-  #de config.log_split_module = Celluloid
+  config.log_split_dir = File.expand_path("../../log/#{Time.now.iso8601}", __FILE__)
+  config.log_split_module = Celluloid
 
   config.around do |ex|
     Celluloid.actor_system = nil
