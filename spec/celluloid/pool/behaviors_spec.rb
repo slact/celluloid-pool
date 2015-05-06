@@ -83,6 +83,39 @@ RSpec.describe "Celluloid::Supervision::Container::Pool", actor_system: :global 
     futures.map(&:value)
   end
 
+  context "allows single worker pools" do
+    let(:initial_size) { 1 } # anything other than 2 or 4 too big on Travis
+
+    subject { MyWorker.pool size: initial_size }
+
+    it "properly" do
+      expect(test_concurrency_of(subject)).to eq(initial_size)
+    end
+
+    context "and resizes properly" do
+      let(:initial_size) { 1 } # anything other than 2 or 4 too big on Travis
+
+      subject { MyWorker.pool size: initial_size }
+
+      it "should adjust the pool size up" do
+        expect(test_concurrency_of(subject)).to eq(initial_size)
+
+        subject.size = 6
+        expect(subject.size).to eq(6)
+
+        expect(test_concurrency_of(subject)).to eq(6)
+      end
+
+      it "should adjust the pool size down" do
+        expect(test_concurrency_of(subject)).to eq(initial_size)
+
+        subject.size = 2
+        expect(subject.size).to eq(2)
+        expect(test_concurrency_of(subject)).to eq(2)
+      end
+    end
+  end
+
   context "#size=" do
     let(:initial_size) { 3 } # anything other than 2 or 4 too big on Travis
 
