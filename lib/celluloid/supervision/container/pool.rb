@@ -1,8 +1,8 @@
 module Celluloid
   module Supervision
     class Container
-      # Manages a fixed-size pool of workers
-      # Delegates work (i.e. methods) and supervises workers
+      # Manages a fixed-size pool of actors
+      # Delegates work (i.e. methods) and supervises actors
       # Don't use this class directly. Instead use MyKlass.pool
       class Pool
         include Celluloid
@@ -10,21 +10,25 @@ module Celluloid
         trap_exit :__crash_handler__
         finalizer :__shutdown__
 
+        attr_reader :size, :actors
+
         def initialize(options={})
           @idle = []
           @busy = []
-          @workers = options[:workers]
+          @klass = options[:actors]
+          @actors = Set.new
+          @mutex = Mutex.new
 
           @size = options[:size] || [Celluloid.cores || 2, 2].max
           @args = options[:args] ? Array(options[:args]) : []
 
           # Do this last since it can suspend and/or crash
-          @idle = @size.times.map { @workers.new_link(*@args) }
+          @idle = @size.times.map { __spawn_actor__ }
         end
 
         def __shutdown__
           # TODO: these can be nil if initializer crashes
-          terminators = (@idle + @busy).map do |actor|
+          terminators = @actors.map do |actor|
             begin
               actor.future(:terminate)
             rescue DeadActorError
@@ -35,24 +39,23 @@ module Celluloid
         end
 
         def _send_(method, *args, &block)
-          worker = __provision_worker__
-
+          actor = __provision_actor__
           begin
-            worker._send_ method, *args, &block
+            actor._send_ method, *args, &block
           rescue DeadActorError # if we get a dead actor out of the pool
             wait :respawn_complete
-            worker = __provision_worker__
+            actor = __provision_actor__
             retry
           rescue Exception => ex
             abort ex
           ensure
-            if worker.alive?
-              @idle << worker
-              @busy.delete worker
+            if actor.alive?
+              @idle << actor
+              @busy.delete actor
 
-              # Broadcast that worker is done processing and
+              # Broadcast that actor is done processing and
               # waiting idle
-              signal :worker_idle
+              signal :actor_idle
             end
           end
         end
@@ -81,19 +84,18 @@ module Celluloid
           _send_ :inspect
         end
 
-        attr_reader :size
-
         def size=(new_size)
           new_size = [0, new_size].max
           if new_size > size
             delta = new_size - size
-            delta.times { @idle << @workers.new_link(*@args) }
+            delta.times { @idle << __spawn_actor__ }
           else
             (size - new_size).times do
-              worker = __provision_worker__
-              unlink worker
-              @busy.delete worker
-              worker.terminate
+              actor = __provision_actor__
+              unlink actor
+              @busy.delete actor
+              @actors.delete actor
+              actor.terminate
             end
           end
           @size = new_size
@@ -107,28 +109,65 @@ module Celluloid
           @idle.length
         end
 
-        # Provision a new worker
-        def __provision_worker__
+        def __idle?(actor)
+          @idle.include? actor
+        end
+
+        def __busy?(actor)
+          @busy.include? actor
+        end
+
+        def __busy
+          @busy
+        end
+        
+        def __idle
+          @idle
+        end
+
+        def __idling?
+          @mutex.synchronize { @idle.empty? }
+        end
+
+        def __state(actor)
+          return :busy if __busy?(actor)
+          return :idle if __idle?(actor)
+          :missing
+        end
+
+        # Instantiate an actor, add it to the actor Set, and return it
+        def __spawn_actor__
+          actor = @klass.new_link(*@args)
+          @mutex.synchronize { @actors.add(actor) }
+          actor
+        end
+
+        # Provision a new actor ( take it out of idle, move it into busy, and avail it )
+        def __provision_actor__
           Task.current.guard_warnings = true
-          while @idle.empty?
-            # Wait for responses from one of the busy workers
+          while __idling?
+            # Wait for responses from one of the busy actors
             response = exclusive { receive { |msg| msg.is_a?(Internals::Response) } }
             Thread.current[:celluloid_actor].handle_message(response)
           end
 
-          worker = @idle.shift
-          @busy << worker
-
-          worker
+          @mutex.synchronize {
+            actor = @idle.shift
+            @busy << actor
+            actor
+          }
         end
 
         # Spawn a new worker for every crashed one
         def __crash_handler__(actor, reason)
-          @busy.delete actor
-          @idle.delete actor
+          @mutex.synchronize {
+            @busy.delete actor
+            @idle.delete actor
+            @actors.delete actor
+          }
           return unless reason
 
-          @idle << @workers.new_link(*@args)
+          @idle << __spawn_actor__
           signal :respawn_complete
         end
 
@@ -168,7 +207,7 @@ module Celluloid
         def method(meth)
           super
         rescue NameError
-          @workers.instance_method(meth.to_sym)
+          @klass.instance_method(meth.to_sym)
         end
       end
     end

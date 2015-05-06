@@ -10,12 +10,13 @@ module Celluloid
     # * args: array of arguments to pass when creating a worker
     #
     def pool(config={}, &block)
-      Celluloid.supervise(pooling_options(config, block: block, workers: self))
+      _ = Celluloid.supervise(pooling_options(config, block: block, actors: self))
+      _.actors.last
     end
 
     # Same as pool, but links to the pool manager
     def pool_link(klass, config={}, &block)
-      Supervision::Container::Pool.new_link(pooling_options(config, block: block, workers: klass))
+      Supervision::Container::Pool.new_link(pooling_options(config, block: block, actors: klass))
     end
   end
 
@@ -25,8 +26,8 @@ module Celluloid
       def_delegators :"Celluloid::Supervision::Container::Pool", :pooling_options
 
       def pool(klass, config={}, &block)
-        supervise(pooling_options(config, block: block, workers: klass))
-        @actors.last
+        _ = supervise(pooling_options(config, block: block, actors: klass))
+        _.actors.last
       end
 
       class Instance
@@ -48,7 +49,7 @@ module Celluloid
         class << self
           def pooling_options(config={},mixins={})
             combined = { :type => Celluloid::Supervision::Container::Pool }.merge(config).merge(mixins)
-            combined[:args] = [[:block, :workers, :size, :args].inject({}) { |e,p| e[p] = combined.delete(p) if combined[p]; e }]
+            combined[:args] = [[:block, :actors, :size, :args].inject({}) { |e,p| e[p] = combined.delete(p) if combined[p]; e }]
             combined
           end
         end

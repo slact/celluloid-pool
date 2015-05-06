@@ -1,4 +1,4 @@
-RSpec.describe "Celluloid::Supervision::Container::Pool", actor_system: :global do
+RSpec.describe Celluloid::Supervision::Container::Pool, actor_system: :global do
   class ExampleError < StandardError; end
 
   class MyWorker
@@ -16,6 +16,11 @@ RSpec.describe "Celluloid::Supervision::Container::Pool", actor_system: :global 
       t = Time.now.to_f
       sleep 0.25
       t
+    end
+
+    def sleepier_work
+      sleep 1.0
+      :worky
     end
 
     def crash
@@ -37,6 +42,33 @@ RSpec.describe "Celluloid::Supervision::Container::Pool", actor_system: :global 
     baseline = Time.now.to_f
     values = 10.times.map { pool.future.sleepy_work }.map(&:value)
     values.select { |t| t - baseline < 0.1 }.length
+  end
+
+  context "when auditing actors directly, whether they are idle or not" do
+    let(:size) { SupervisionContainerHelper::SIZE }
+
+    before(:each) {
+      subject { MyPoolActor.pool }
+    }
+
+    it "has idle and busy arrays totalling the same as one actor set" do
+      expect(subject.actors.length).to eq(subject.busy_size + subject.idle_size)
+    end
+
+    it "can be determined whether an actor is idle or busy" do
+      busy = 0
+      worky = subject.future.sleepier_work
+      subject.actors.each { |actor| busy += 1 if subject.__busy?(actor) }
+      expect(worky.value).to eq(:worky)
+      expect(busy).to eq(1)
+    end
+
+    it "can have the actor state revealed by keyword" do
+      worky = subject.future.sleepier_work
+      states = subject.actors.map { |actor| subject.__state(actor) }
+      expect(worky.value).to eq(:worky)
+      expect(states.include?(:busy)).to be_truthy
+    end
   end
 
   subject { MyWorker.pool }
@@ -84,7 +116,7 @@ RSpec.describe "Celluloid::Supervision::Container::Pool", actor_system: :global 
   end
 
   context "allows single worker pools" do
-    let(:initial_size) { 1 } # anything other than 2 or 4 too big on Travis
+    let(:initial_size) { 1 }
 
     subject { MyWorker.pool size: initial_size }
 
