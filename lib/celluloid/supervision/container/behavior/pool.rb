@@ -9,14 +9,13 @@ module Celluloid
     # * size: how many workers to create. Default is worker per CPU core
     # * args: array of arguments to pass when creating a worker
     #
-    def pool(config={})
-      Celluloid.services.supervise(pooling_options(config, workers: self))
-      Celluloid.services.actors.last
+    def pool(config={}, &block)
+      Celluloid.supervise(pooling_options(config, block: block, workers: self))
     end
 
     # Same as pool, but links to the pool manager
-    def pool_link(klass, config={})
-      Supervision::Container::Pool.new_link(pooling_options(config, workers: klass))
+    def pool_link(klass, config={}, &block)
+      Supervision::Container::Pool.new_link(pooling_options(config, block: block, workers: klass))
     end
   end
 
@@ -24,9 +23,10 @@ module Celluloid
     class Container
       extend Forwardable
       def_delegators :"Celluloid::Supervision::Container::Pool", :pooling_options
-      def pool(klass, config={})
-        Celluloid.services.supervise(pooling_options(config, workers: klass))
-        Celluloid.services.actors.last
+
+      def pool(klass, config={}, &block)
+        supervise(pooling_options(config, block: block, workers: klass))
+        @actors.last
       end
 
       class Instance
@@ -35,9 +35,9 @@ module Celluloid
 
       class << self
         # Register a pool of actors to be launched on group startup
-        def pool(klass, *args, &_block)
+        def pool(klass, config, &block)
           blocks << lambda do |container|
-            container.pool(klass, Configuration.options(args))
+            container.pool(klass, config, &block)
           end
         end
       end
@@ -48,7 +48,7 @@ module Celluloid
         class << self
           def pooling_options(config={},mixins={})
             combined = { :type => Celluloid::Supervision::Container::Pool }.merge(config).merge(mixins)
-            combined[:args] = [combined.select { |k,v| [:workers, :size, :args].include?(k) }]
+            combined[:args] = [[:block, :workers, :size, :args].inject({}) { |e,p| e[p] = combined.delete(p) if combined[p]; e }]
             combined
           end
         end
@@ -56,7 +56,6 @@ module Celluloid
         identifier! :size, :pool
 
         configuration do
-          puts "configuring pool"
           @supervisor = Container::Pool
           @method = "pool_link"
           @pool = true

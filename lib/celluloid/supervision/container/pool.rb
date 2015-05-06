@@ -5,7 +5,6 @@ module Celluloid
       # Delegates work (i.e. methods) and supervises workers
       # Don't use this class directly. Instead use MyKlass.pool
       class Pool
-
         include Celluloid
 
         trap_exit :__crash_handler__
