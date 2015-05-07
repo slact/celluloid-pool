@@ -15,5 +15,5 @@ Gem::Specification.new do |gem|
   gem.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|examples|spec|features)/}) }
   gem.require_paths = ["lib"]
 
-  Celluloid::Sync.gems(gem)
+  Celluloid::Sync::Gemspec[gem]
 end
