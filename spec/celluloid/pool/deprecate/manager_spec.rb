@@ -154,7 +154,7 @@ unless $CELLULOID_BACKPORTED == false
 
         context "when unintialized" do
           it "should provide reasonable dump" do
-            expect(subject.inspect).to eq("#<Celluloid::Proxy::Async(Celluloid::PoolManager)>")
+            expect(subject.inspect).to eq("#<Celluloid::Proxy::Async(Celluloid::Supervision::Container::Pool)>")
           end
         end
       end
