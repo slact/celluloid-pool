@@ -27,6 +27,7 @@ module Celluloid
         end
 
         def __shutdown__
+          return unless @actors
           # TODO: these can be nil if initializer crashes
           terminators = @actors.map do |actor|
             begin
