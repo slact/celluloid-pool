@@ -60,7 +60,7 @@ module Celluloid
           @supervisor = Container::Pool
           @method = "pool_link"
           @pool = true
-          @pool_size = @cofiguration[:size]
+          @pool_size = @configuration[:size]
           @configuration
         end
       end
