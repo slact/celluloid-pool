@@ -47,7 +47,7 @@ module Celluloid
             wait :respawn_complete
             actor = __provision_actor__
             retry
-          rescue Exception => ex
+          rescue ::Exception => ex
             abort ex
           ensure
             if actor.alive?

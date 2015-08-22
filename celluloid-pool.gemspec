@@ -3,8 +3,8 @@ require File.expand_path("../culture/sync", __FILE__)
 
 Gem::Specification.new do |gem|
   gem.name          = "celluloid-pool"
-  gem.version       = "0.20.0"
-  gem.authors       = ["Tony Arcieri", "Tim Carey-Smith", "digitalextremist //"]
+  gem.version       = "0.20.1"
+  gem.authors       = ["Tony Arcieri", "Tim Carey-Smith", "Donovan Keme"]
   gem.email         = ["tony.arcieri@gmail.com", "code@extremist.digital"]
 
   gem.summary       = "An implementation of an actor pool, based on the Celluloid concurrent object framework."
