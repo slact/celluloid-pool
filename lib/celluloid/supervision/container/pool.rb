@@ -153,7 +153,7 @@ module Celluloid
           end
 
           @mutex.synchronize {
-            actor = @idle.shift
+            actor = @idle.slice! -1
             @busy << actor
             actor
           }
